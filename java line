@@ -1,0 +1,18 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
+
+public class Line 
+{
+	int locx1 = 0;
+	int locx2 = 0;
+	int locy1 = 0;
+	int locy2 = 0;
+	Node p1 = null;
+	Node p2 = null;
+	public void paintMe(Graphics G)
+	{
+		G.setColor(Color.black);
+		G.drawLine(locx1,locy1, locx2, locy2);
+	}
+}
