@@ -1,10 +1,12 @@
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
-public class graph 
-{
+public class graph extends JPanel{
 	JFrame frame = new JFrame();
 	Container west = new Container();
 	Container center = new Container();
@@ -12,8 +14,17 @@ public class graph
 	JButton mode = new JButton();
 	JButton save = new JButton();
 	JButton[][] grid = new JButton[10][10];
+	public graph()
+	{
+		super();
+		frame.setSize(1200,1000);
+	}
 	public static void main(String[] args)
 	{
 		new graph();
+	}
+	public void paintComponant(Graphics G)
+	{
+		super.paintComponent(G);
 	}
 }
