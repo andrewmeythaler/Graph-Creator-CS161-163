@@ -1,0 +1,19 @@
+import java.awt.Container;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
+
+public class graph 
+{
+	JFrame frame = new JFrame();
+	Container west = new Container();
+	Container center = new Container();
+	Container north = new Container();
+	JButton mode = new JButton();
+	JButton save = new JButton();
+	JButton[][] grid = new JButton[10][10];
+	public static void main(String[] args)
+	{
+		new graph();
+	}
+}
