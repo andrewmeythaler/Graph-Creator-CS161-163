@@ -1,30 +1,479 @@
+package graph;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 
-public class graph extends JPanel{
+public class graph implements ActionListener, MouseListener{
+	final int PLACENODE = 0;
+	final int DELETENODE = 1;
+	final int CONNECT = 2;
+	final int CHECKNODE = 3;
+	final int CHECKLINE = 4;
+	final int SALESMAN = 5;
+	painter painter = new painter();
+	int current_mode = 0;
 	JFrame frame = new JFrame();
 	Container west = new Container();
-	Container center = new Container();
 	Container north = new Container();
-	JButton mode = new JButton();
-	JButton save = new JButton();
-	JButton[][] grid = new JButton[10][10];
+	JButton mode = new JButton("Place Node");
+	JButton save = new JButton("Save");
+	JLabel info = new JLabel("Info");
+	JPanel panel = new JPanel();
+	Container east = new Container();
+	JTextField search1 = new JTextField();
+	JTextField search2 = new JTextField();
+	JButton search = new JButton("Search");
+	JTextField tf = new JTextField();
+	//JButton clear = new JButton();
+	static public ImageIcon nodeicon;
+	static public ImageIcon blankpiece;
+	Vector<Node> nodes = new Vector<Node>();
+	Vector<Line> lines = new Vector<Line>();
+	Node selected = null;
+	Line selectedL = null;
 	public graph()
 	{
-		super();
-		frame.setSize(1200,1000);
+		frame.setSize(1800, 1000);
+		frame.setLayout(new BorderLayout());
+		frame.add(painter, BorderLayout.CENTER);
+		painter.addMouseListener(this);
+		mode.addActionListener(this);
+		save.addActionListener(this);
+		west.setLayout(new GridLayout(3,1));
+		west.add(mode);
+		west.add(save);
+		west.add(tf);
+		north.setLayout(new GridLayout(1,1));
+		north.add(info);
+		east.setLayout(new GridLayout(3,1));
+		search.addActionListener(this);
+		east.add(search1);
+		east.add(search2);
+		east.add(search);
+		//north.add(clear);
+		frame.add(north, BorderLayout.NORTH);
+		frame.add(west, BorderLayout.WEST);
+		frame.add(east, BorderLayout.EAST);
+		//frame.add(panel, BorderLayout.CENTER);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.repaint();
+		search1.setText("Node search");
+		search2.setText("Connection search");
 	}
 	public static void main(String[] args)
 	{
 		new graph();
 	}
-	public void paintComponant(Graphics G)
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if(current_mode == PLACENODE)
+		{
+			for(int x = 0; x < nodes.size(); x++)
+			{
+				if(e.getX() < nodes.elementAt(x).getX()  + 31 &&  e.getX()  > nodes.elementAt(x).getX() && e.getY() <  nodes.elementAt(x).getY() + 31 && e.getY() > nodes.elementAt(x).getY())
+				{
+					info.setText("Position occupied");
+					return;
+				}
+			}
+			System.out.println("Node created");
+			Node temp = new Node(e.getX(), e.getY(), tf.getText());
+			nodes.addElement(temp);
+			painter.addNode(temp);
+			frame.repaint();
+			painter.repaint();
+		}
+		else if(current_mode == CONNECT)
+		{
+			for(int x = 0; x < nodes.size(); x++)
+			{
+				if(e.getX() < nodes.elementAt(x).getX()  + 31 &&  e.getX()  > nodes.elementAt(x).getX() && e.getY() <  nodes.elementAt(x).getY() + 31 && e.getY() > nodes.elementAt(x).getY())
+				{
+					if(selected == null)
+					{
+						selected = nodes.elementAt(x);
+						selected.setColor(Color.GREEN);
+						painter.repaint();
+					}
+					else
+					{
+						Line temp = new Line(nodes.elementAt(x).getX()+15, selected.getX()+15, nodes.elementAt(x).getY()+15, selected.getY()+15, nodes.elementAt(x), selected, tf.getText());
+						lines.addElement(temp);
+						nodes.elementAt(x).addLine(temp);
+						painter.addLine(temp);
+						selected.addLine(temp);
+						selected.setColor(Color.red);
+						selected = null;
+						painter.repaint();
+						System.out.println("line");
+					}
+				}
+			}
+		}
+		else if(current_mode == CHECKNODE)
+		{
+			for(int x = 0; x < nodes.size(); x++)
+			{
+				if(e.getX() < nodes.elementAt(x).getX()  + 31 &&  e.getX()  > nodes.elementAt(x).getX() && e.getY() <  nodes.elementAt(x).getY() + 31 && e.getY() > nodes.elementAt(x).getY())
+				{
+					if(selected == null)
+					{
+						selected = nodes.elementAt(x);
+						selected.setColor(Color.GREEN);
+						painter.repaint();
+						info.setText(selected.getName() + "X: " + selected.getX() + ", Y: " + selected.getY());
+					}
+					else
+					{
+						selected.setColor(Color.red);
+						selected = null;
+						selected = nodes.elementAt(x);
+						selected.setColor(Color.GREEN);
+						painter.repaint();
+						info.setText(selected.getName() + "X: " + selected.getX() + ", Y: " + selected.getY());
+					}
+				}
+			}
+		}
+		else if(current_mode == CHECKLINE)
+		{
+			for(int x = 0; x < nodes.size(); x++)
+			{
+				if(e.getX() < nodes.elementAt(x).getX()  + 31 &&  e.getX()  > nodes.elementAt(x).getX() && e.getY() <  nodes.elementAt(x).getY() + 31 && e.getY() > nodes.elementAt(x).getY())
+				{
+					if(selected == null)
+					{
+						selected = nodes.elementAt(x);
+						selected.setColor(Color.GREEN);
+						painter.repaint();
+					}
+					else
+					{
+						if(selectedL == null)
+						{
+							if(selected.getConnect(nodes.elementAt(x)) != null)
+							{
+								selectedL = selected.getConnect(nodes.elementAt(x));
+								selectedL.setColor(Color.GREEN);
+								info.setText(selectedL.getName() + " X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1: " + selectedL.getY1() + ", Y2: " + selectedL.getY2() + ", Node 1: " + selectedL.getP1().getName() + ", Node 2: " + selectedL.getP2().getName());
+								selected.setColor(Color.RED);
+								selected = null;
+							}
+							else
+							{
+								info.setText("No connection");
+							}
+						}
+						else
+						{
+							selectedL.setColor(Color.RED);
+							if(selected.getConnect(nodes.elementAt(x)) != null)
+							{
+								selectedL = selected.getConnect(nodes.elementAt(x));
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+								selected.setColor(Color.RED);
+								selected = null;
+							}
+							else
+							{
+								info.setText("No connection");
+							}
+						}
+					}
+				}
+			}
+		}
+		else if(current_mode == DELETENODE)
+		{
+			for(int x = 0; x < nodes.size(); x++)
+			{
+				if(e.getX() < nodes.elementAt(x).getX()  + 31 &&  e.getX()  > nodes.elementAt(x).getX() && e.getY() <  nodes.elementAt(x).getY() + 31 && e.getY() > nodes.elementAt(x).getY())
+				{
+					nodes.elementAt(x).removeAll();
+					painter.removeNode(nodes.elementAt(x));
+					removeNode(nodes.elementAt(x));
+					painter.repaint();
+				}
+			}
+		}
+	}	
+	public void removeNode(Node IN)
 	{
-		super.paintComponent(G);
+		for(int x = 0; x < lines.size(); x++)
+		{
+			if(lines.elementAt(x).getP1().equals(IN) || lines.elementAt(x).getP2().equals(IN))
+			{
+				lines.removeElementAt(x);
+			}
+		}
+		nodes.remove(IN);
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(mode))
+		{
+			if(current_mode == PLACENODE)
+			{
+				current_mode++;
+				mode.setText("Delete Nodes");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+			else if(current_mode == DELETENODE)
+			{
+				current_mode++;
+				mode.setText("Connect Nodes");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+			else if(current_mode == CONNECT)
+			{
+				current_mode++;
+				mode.setText("Check Node Data");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+			else if(current_mode == CHECKNODE)
+			{
+				current_mode++;
+				mode.setText("Check Line Data");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+			else if(current_mode == CHECKLINE)
+			{
+				current_mode++;
+				mode.setText("Solve Travelling Salesman");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+			else if(current_mode == SALESMAN)
+			{
+				current_mode = PLACENODE;
+				mode.setText("Place Node");
+				if(selected != null)
+				{
+					selected.setColor(Color.RED);
+					selected = null;
+				}
+				if(selectedL != null)
+				{
+					selectedL.setColor(Color.RED);
+					selectedL = null;
+				}
+			}
+		}
+		else if(e.getSource().equals(save))
+		{
+			PrintWriter pw;
+			try
+			{
+				pw = new PrintWriter(new FileWriter(new File("matrix.txt")));
+				String output = "";
+				for(int x = 0; x < nodes.size(); x++)
+				{
+					output = output + nodes.elementAt(x).getName() + "," + nodes.elementAt(x).getX() + "," + nodes.elementAt(x).getY();
+					for(int y = 0; y < lines.size(); y++)
+					{
+						if(lines.elementAt(y).getP1().equals(nodes.elementAt(x)))
+						{
+							output = output + ":" + lines.elementAt(y).getName() + "," + lines.elementAt(y).getDistance() + "," + lines.elementAt(y).getP2().getName();
+						}
+						if(lines.elementAt(y).getP2().equals(nodes.elementAt(x)))
+						{
+							output = output + ":" + lines.elementAt(y).getName() + "," + lines.elementAt(y).getDistance() + "," + lines.elementAt(y).getP1().getName();
+						}
+					}
+					output = output + "\n" + "\n";
+				}
+				pw.write(output);
+				pw.close();
+			}catch(IOException ex)
+			{
+				System.exit(0);
+			}
+		}
+		else if(e.getSource().equals(search))
+		{
+			if(search1.getText().equals("Node search"))
+			{
+				if(search2.getText().equals("Connection search"))
+				{
+					return;
+				}
+				else
+				{
+					for(int x = 0; x < lines.size(); x++)
+					{
+						if(lines.elementAt(x).getName().equals(search2.getText()))
+						{
+							if(selectedL == null)
+							{
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+							else
+							{
+								selectedL.setColor(Color.RED);
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				if(search2.getText().equals("Connection search"))
+				{
+					for(int x = 0; x < nodes.size(); x++)
+					{
+						if(nodes.elementAt(x).getName().equals(search1.getText()))
+						{
+							if(selected == null)
+							{
+								selected = nodes.elementAt(x);
+								selected.setColor(Color.GREEN);
+								painter.repaint();
+								info.setText(selected.getName() + "X: " + selected.getX() + ", Y: " + selected.getY());
+							}
+							else
+							{
+								selected.setColor(Color.red);
+								selected = null;
+								selected = nodes.elementAt(x);
+								selected.setColor(Color.GREEN);
+								painter.repaint();
+								info.setText(selected.getName() + "X: " + selected.getX() + ", Y: " + selected.getY());
+							}
+						}
+					}
+					info.setText("Node not found");
+				}
+				else
+				{
+					for(int x = 0; x < lines.size(); x++)
+					{
+						if(lines.elementAt(x).getP1().getName().equals(search1.getText()) && lines.elementAt(x).getP1().getName().equals(search2.getText()))
+						{
+							if(selectedL == null)
+							{
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+							else
+							{
+								selectedL.setColor(Color.RED);
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+						}
+						else if(lines.elementAt(x).getP2().getName().equals(search1.getText()) && lines.elementAt(x).getP1().getName().equals(search2.getText()))
+						{
+							if(selectedL == null)
+							{
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+							else
+							{
+								selectedL.setColor(Color.RED);
+								selectedL = lines.elementAt(x);
+								selectedL.setColor(Color.GREEN);
+								info.setText("X1: " + selectedL.getX1() + ", X2: " + selectedL.getX2() + ", Y1:" + selectedL.getY1() + ", Y2: " + selectedL.getY2());
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
