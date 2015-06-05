@@ -1,19 +1,31 @@
+package graph;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Vector;
 
 
-public class Node
+public class Node implements java.io.Serializable
 {
+	String name;
 	int locx = 0;
 	int locy = 0;
-	int width = 0;
-	int height = 0;
-	public void setLocation(int XIN, int YIN, int WIN, int HIN)
+	int width = 30;
+	int height = 30;
+	Color current = Color.RED;
+	Vector<Line> lines = new Vector<Line>();
+	public Node(int INX, int INY, String IN)
+	{
+		super();
+		locx = INX;
+		locy = INY;
+		width = 30;
+		height = 30;
+		name = IN;
+	}
+	public void setLocation(int XIN, int YIN)
 	{
 		locx = XIN;
 		locy = YIN;
-		width = WIN;
-		height = HIN;
 	}
 	public int getX()
 	{
@@ -23,17 +35,57 @@ public class Node
 	{
 		return locy;
 	}
-	public int getWidth()
+	public void addLine(Line IN)
 	{
-		return width;
-	}
-	public int getHeight()
-	{
-		return height;
+		lines.addElement(IN);
 	}
 	public void paintMe(Graphics G)
 	{
-		G.setColor(Color.black);
-		G.fillOval(locx, locy, width, height);
+		G.setColor(current);
+		//System.out.println(locx + locy + width + height);
+		G.drawOval(locx, locy, width, height);
+		G.drawString(name, locx, locy);;
+	}
+	public void setColor(Color IN)
+	{
+		current = IN;
+	}
+	public Line getConnect(Node IN)
+	{
+		for(int x = 0; x < lines.size(); x++)
+		{
+			if(lines.elementAt(x).getP1().equals(IN) || lines.elementAt(x).getP2().equals(IN))
+			{
+				Line temp = lines.elementAt(x);
+				return temp;
+			}
+		}
+		return null;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public void removeAll()
+	{
+		for(int x = 0; x < lines.size(); x++)
+		{
+				if(lines.elementAt(x).getP1().equals(this))
+				{
+					lines.elementAt(x).getP2().deleteLine(lines.elementAt(x));
+				}
+				else
+				{
+					lines.elementAt(x).getP1().deleteLine(lines.elementAt(x));
+				}
+				lines.removeElementAt(x);
+		}
+	}
+	public void deleteLine(Line IN)
+	{
+		for(int x = 0; x < lines.size(); x++)
+		{
+			lines.removeElementAt(x);
+		}
 	}
 }
