@@ -1,18 +1,74 @@
+package graph;
 import java.awt.Color;
 import java.awt.Graphics;
 
 
-public class Line 
+public class Line implements java.io.Serializable
 {
+	String name;
 	int locx1 = 0;
 	int locx2 = 0;
 	int locy1 = 0;
 	int locy2 = 0;
 	Node p1 = null;
 	Node p2 = null;
+	Color current = Color.BLUE;
+	public Line(int INX1, int INX2, int INY1, int INY2, Node IN1, Node IN2, String IN)
+	{
+		super();
+		locx1 = INX1;
+		locx2 = INX2;
+		locy1 = INY1;
+		locy2 = INY2;
+		p1 = IN1;
+		p2 = IN2;
+		name = IN;
+	}
 	public void paintMe(Graphics G)
 	{
-		G.setColor(Color.black);
+		G.setColor(current);
 		G.drawLine(locx1,locy1, locx2, locy2);
+		G.drawString(name, locx1, locy1);
+	}
+	public void setColor(Color IN)
+	{
+		current = IN;
+	}
+	public int getX1()
+	{
+		return locx1;
+	}
+	public int getY1()
+	{
+		return locy1;
+	}
+	public int getX2()
+	{
+		return locx2;
+	}
+	public int getY2()
+	{
+		return locy2;
+	}
+	public Node getP1()
+	{
+		return p1;
+	}
+	public Node getP2()
+	{
+		return p2;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public int getDistance()
+	{
+		int temp1 = (locx1-locx2)^2;
+		int temp2 = (locy1-locy2)^2;
+		int temp3 = temp1+temp2;
+		double temp4 = (double)(temp3);
+		int temp5 = (int)(Math.sqrt(temp4));
+		return temp5;
 	}
 }
