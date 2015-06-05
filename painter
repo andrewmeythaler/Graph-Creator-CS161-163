@@ -1,0 +1,44 @@
+package graph;
+import java.awt.Graphics;
+import java.util.Vector;
+import javax.swing.JPanel;
+
+public class painter extends JPanel   {
+	Vector<Node> nodes = new Vector<Node>();
+	Vector<Line> lines = new Vector<Line>();
+	public painter()
+	{
+		super();
+	}
+	public void paintComponent(Graphics G)
+	{
+		super.paintComponent(G);
+		for(int x = 0; x < lines.size(); x++)
+		{
+			lines.elementAt(x).paintMe(G);
+		}
+		for(int x = 0; x < nodes.size(); x++)
+		{
+			nodes.elementAt(x).paintMe(G);
+		}
+	}
+	public void addLine(Line IN)
+	{
+		lines.addElement(IN);
+	}
+	public void addNode(Node IN)
+	{
+		nodes.addElement(IN);
+	}
+	public void removeNode(Node IN)
+	{
+		for(int x = 0; x < lines.size(); x++)
+		{
+			if(lines.elementAt(x).getP1().equals(IN) || lines.elementAt(x).getP2().equals(IN))
+			{
+				lines.removeElementAt(x);
+			}
+		}
+		nodes.remove(IN);
+	}
+}
